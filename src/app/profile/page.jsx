@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
-import { User, GraduationCap, Briefcase, Code, Linkedin, Github, Save, Loader2, X, Plus } from 'lucide-react';
+import { User, GraduationCap, Briefcase, Code, Link2, Globe, Save, Loader2, X, Plus } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -225,13 +225,13 @@ export default function Profile() {
         <div className="flex gap-4" style={{ flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: '250px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <label style={{ fontSize: '0.875rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Linkedin size={16} color="#0077b5" /> LinkedIn Profile
+              <Briefcase size={16} color="#0077b5" /> LinkedIn Profile
             </label>
             <input className="input-field" value={form.linkedin} onChange={e => setForm(p => ({ ...p, linkedin: e.target.value }))} placeholder="https://linkedin.com/in/your-profile" />
           </div>
           <div style={{ flex: 1, minWidth: '250px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <label style={{ fontSize: '0.875rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Github size={16} /> GitHub Profile
+              <Globe size={16} /> GitHub Profile
             </label>
             <input className="input-field" value={form.github} onChange={e => setForm(p => ({ ...p, github: e.target.value }))} placeholder="https://github.com/your-username" />
           </div>
