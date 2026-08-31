@@ -16,86 +16,117 @@
 
 ---
 
-## 🏆 Hackathon Submission
-This project was proudly conceptualized, designed, and engineered by team **KineticModifiers** for the 2026 Hackathon. We set out to compete against the brightest minds from top-tier colleges by solving a critical problem in modern education: the overwhelming nature of unstructured learning. Our solution bridges the gap between raw information and structured, personalized education using cutting-edge Generative AI and a premium, physics-based user interface.
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <h3>🏆 Official Submission for HCLTech AMPlified</h3>
+        <p><strong>Season 1 • 2026 | The AI Challenge</strong></p>
+        <p><i>"Build. Compete. Learn. Rise."</i></p>
+        <p>This project was proudly conceptualized, designed, and engineered by team <b>KineticModifiers</b> for the Round 2 PathFinder Prototype challenge. We set out to compete against the brightest minds by solving a critical problem in modern education using cutting-edge Generative AI.</p>
+      </td>
+    </tr>
+  </table>
+</div>
 
 ---
 
 ## 🌟 The Problem & Our Solution
-**The Problem:** The internet has democratized education, but it has also created "choice paralysis". Beginners are overwhelmed by thousands of bootcamps, scattered YouTube videos, and outdated roadmaps. Without a personal mentor, students often learn the wrong skills, lose motivation, and quit.
 
-**The Solution:** LearnSync AI is a next-generation educational platform that acts as a highly intelligent, 24/7 personal mentor. It dynamically generates **highly personalized, step-by-step learning roadmaps** based on a user's exact interests, current experience level, and ultimate career goals. Instead of feeding users a generic list of courses, LearnSync curates hyper-specific milestones, tracks progress in real-time, and provides an integrated AI chat interface to explain complex concepts on the fly.
+**The Problem:** The internet has democratized education, but it has also created **"choice paralysis"**. Beginners are overwhelmed by thousands of courses and scattered YouTube videos. Without a personal mentor, students often learn the wrong skills, lose motivation, and quit.
 
----
-
-## 🛠️ Deep Dive: Features & Functionality
-
-### 1. 🧠 Dynamic AI Onboarding & Goal Parsing
-The user journey begins with a smart, multi-step onboarding questionnaire. Users input their core interests (e.g., Data Science, Web3), their current experience level, and their long-term goals. 
-- **Under the Hood:** This data is sent to a custom Next.js API route where it is packaged into a highly specific prompt. The prompt is processed by Google's cutting-edge `gemini-3.6-flash` AI model, which generates a strictly typed JSON structure containing a comprehensive, multi-step curriculum. 
-- **Fallback Redundancy:** We engineered a robust fallback mechanism. If the AI rate limit is hit, the system gracefully degrades to backup models to ensure the user is never left with a broken screen.
-
-### 2. 🗺️ Interactive 3D Roadmap Generation
-Once the AI generates the curriculum, the data is saved to a MongoDB Atlas cluster and rendered on the **My Path** page.
-- **The UX:** We built a visually stunning, Framer Motion-powered timeline. The timeline visually "draws" itself as you load the page, and milestone cards pop into view sequentially.
-- **Actionable Steps:** Each milestone contains theoretical concepts, required skills, and an estimated time to completion. Users can click "Mark as Complete", which updates their database record in real-time and updates the progress metrics on their Dashboard.
-
-### 3. 💬 Context-Aware AI Mentor
-Learning isn't just about reading a list of topics; it's about asking questions. We integrated a persistent AI Assistant chat interface directly into the platform.
-- **Context Injection:** When a user asks a question, the API doesn't just send the raw text to Gemini. It intercepts the request, queries MongoDB for the user's current experience level, their exact learning path, and their goals, and injects this context into the system prompt.
-- **Result:** The AI Mentor answers questions specifically tailored to the user's skill level. If a beginner asks about React, the AI uses simple analogies. If an advanced user asks, it dives into Virtual DOM reconciliation.
-
-### 4. 🔒 Secure Authentication & Data Persistence
-Security and data integrity are handled via `NextAuth.js`.
-- **Encryption:** Passwords are fully hashed and salted using `bcryptjs` before being stored in the database.
-- **Session Management:** We use JWT (JSON Web Tokens) to securely maintain the user's session state across the application, tying their unique `ObjectId` directly to their generated roadmaps and chat histories in MongoDB.
-
-### 5. ✨ Premium Glassmorphism UI & Physics
-To stand out in a competitive hackathon, the UI had to be flawless.
-- **Aurora Mesh Environment:** We broke away from flat CSS. The dark mode features a mesmerizing, physics-simulated Aurora Glowing Mesh. Three massive glowing orbs slowly float, expand, and contract behind the application panels, giving a 3D-depth effect.
-- **Micro-interactions:** Every button and glass-panel features hover-physics. Components scale slightly on interaction, projecting deep shadows and reflecting the glowing background, achieving a seamless 60fps performance without heavy WebGL.
+**The Solution:** LearnSync AI acts as a highly intelligent, 24/7 personal mentor. It dynamically generates **personalized, step-by-step learning roadmaps** based on a user's exact interests, current experience level, and ultimate career goals. LearnSync curates hyper-specific milestones, tracks progress in real-time, and provides an integrated AI chat interface to explain complex concepts natively.
 
 ---
 
-## 🏗️ Architecture & Workflow Algorithm
+## 🏗️ Interactive Architecture & Workflows
 
-### User Flow Diagram
+To ensure high performance, responsiveness, and secure data handling, we engineered a scalable, full-stack application. Below are the architectural workflows that power LearnSync.
+
+### 1. User Journey & Core Loop
+This flowchart maps how a user moves from an initial idea to executing a structured curriculum.
+
 ```mermaid
 graph TD;
-    A[User Visits Site] --> B(Secure Sign Up / Login)
-    B --> C{Has Active Path?}
-    C -- No --> D[Multi-step AI Onboarding]
-    D --> E[Gemini 3.6 Flash Parses Goals]
-    E --> F[Generate JSON Curriculum]
-    F --> G[Save to MongoDB Atlas]
+    A[User Visits Platform] --> B(Secure Sign Up / Login via NextAuth)
+    B --> C{Has Active Path in DB?}
+    C -- No --> D[Natural Language Goal Input]
+    D --> E[Gemini 3.6 Flash Parses Ambition]
+    E --> F[AI Generates JSON Curriculum]
+    F --> G[(MongoDB Atlas Storage)]
     C -- Yes --> H[Dashboard Analytics]
     G --> H
-    H --> I[View Interactive Framer Motion Roadmap]
-    H --> J[Chat with Context-Aware AI Mentor]
-    I --> K[Mark Milestone Complete]
+    H --> I[View Interactive 3D Roadmap]
+    H --> J[Query Persistent AI Mentor]
+    I --> K[Mark Milestone as 'Complete']
     K --> H
 ```
 
-### Advanced Folder Structure
-```text
-📦 learning-path-recommender
- ┣ 📂 src
- ┃ ┣ 📂 app
- ┃ ┃ ┣ 📂 api               # Serverless API Routes
- ┃ ┃ ┃ ┣ 📂 auth            # NextAuth credential verification
- ┃ ┃ ┃ ┣ 📂 chat            # Context-injection & AI generation
- ┃ ┃ ┃ ┣ 📂 dashboard       # Metric calculations
- ┃ ┃ ┃ ┗ 📂 onboarding      # Gemini Prompt Engineering logic
- ┃ ┃ ┣ 📂 chat              # Chat UI & Markdown rendering
- ┃ ┃ ┣ 📂 dashboard         # Progress tracking UI
- ┃ ┃ ┣ 📂 onboarding        # State-driven questionnaire
- ┃ ┃ ┗ 📂 roadmap           # Timeline mapping & Framer variants
- ┃ ┣ 📂 components          # Reusable React components (Sidebar, Loaders)
- ┃ ┣ 📂 lib                 # Core utilities (Mongoose connection pooling)
- ┃ ┗ 📂 models              # Strict Mongoose Schemas (User, Milestone, Chat)
- ┣ 📜 globals.css           # Aurora animations and Glassmorphism design tokens
- ┗ 📜 .env                  # Environment Variables (Ignored in Git)
+### 2. Intelligent Onboarding Generation
+How we force a Large Language Model to return structured, predictable data for our UI.
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant NextJS API
+    participant Gemini 3.6
+    participant MongoDB
+
+    User->>NextJS API: Submits Goal & Experience Level
+    activate NextJS API
+    NextJS API->>NextJS API: Construct Strict JSON Schema Prompt
+    NextJS API->>Gemini 3.6: Inject Prompt + System Constraints
+    activate Gemini 3.6
+    Gemini 3.6-->>NextJS API: Returns Array of JSON Milestones
+    deactivate Gemini 3.6
+    NextJS API->>NextJS API: Regex Fallback Parsing (Strip Markdown)
+    NextJS API->>MongoDB: Save Validated Schema to User Profile
+    MongoDB-->>NextJS API: Success
+    NextJS API-->>User: Redirect to 3D Roadmap
+    deactivate NextJS API
 ```
+
+### 3. Context-Aware Mentor Workflow (RAG-Lite)
+How the chat assistant "knows" exactly what the user is currently learning without being explicitly told.
+
+```mermaid
+flowchart LR
+    A[User Types Question] --> B(Chat API Route)
+    B --> C[(Query MongoDB)]
+    C -->|Return Active Roadmap + Level| D{Context Injector}
+    D -->|Build Master Prompt| E[Gemini AI]
+    E --> F[Hyper-Personalized Response]
+    F --> A
+```
+
+---
+
+## 🛠️ Deep Dive: Features & UX Decisions
+
+<details>
+<summary><b>1. 🧠 Dynamic AI Onboarding & Goal Parsing</b> (Click to expand)</summary>
+Users bypass complex forms and describe their career ambitions in natural language. This data is sent to a custom Next.js API route where it is packaged into a highly specific prompt. The prompt is processed by Google's cutting-edge `gemini-3.6-flash` AI model, which generates a strictly typed JSON structure containing a comprehensive, multi-step curriculum.
+</details>
+
+<details>
+<summary><b>2. 🗺️ Interactive 3D Roadmap Generation</b> (Click to expand)</summary>
+We built a visually stunning, Framer Motion-powered timeline. The timeline visually "draws" itself as you load the page, and milestone cards pop into view sequentially. Each milestone contains theoretical concepts, actionable resources, and an estimated time to completion.
+</details>
+
+<details>
+<summary><b>3. 💬 Context-Aware AI Mentor</b> (Click to expand)</summary>
+Learning isn't just about reading; it's about asking questions. When a user asks a question, the API silently queries MongoDB for their exact learning path and injects this context into the system prompt. The AI Mentor answers questions specifically tailored to the user's skill level.
+</details>
+
+<details>
+<summary><b>4. 🔒 Secure Authentication & Data Persistence</b> (Click to expand)</summary>
+Security is handled via `NextAuth.js`. Passwords are fully hashed and salted using `bcryptjs`. We use JWT (JSON Web Tokens) to securely maintain the user's session state across the application, tying their unique `ObjectId` directly to their roadmaps in MongoDB.
+</details>
+
+<details>
+<summary><b>5. ✨ Premium Glassmorphism UI & Physics</b> (Click to expand)</summary>
+To stand out in the HCLTech challenge, the UI had to be flawless. The dark mode features a mesmerizing, physics-simulated Aurora Glowing Mesh. Components scale slightly on interaction, projecting deep shadows and reflecting the glowing background, achieving seamless 60fps performance without heavy WebGL.
+</details>
 
 ---
 
@@ -135,16 +166,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. The applica
 
 ---
 
-## 🎯 Navigating the Platform
-1. **Create an Account:** Register securely. Your credentials will be hashed and stored.
-2. **Define Your Future:** Complete the Onboarding flow. Be as specific as possible (e.g., "I want to master Python for quantitative finance").
-3. **Analyze Your Dashboard:** View your overall progress metrics and determine what your next immediate action should be.
-4. **Follow the Roadmap:** Navigate to **My Path**. Read through the AI-generated milestones, complete the required learning, and click **Mark Complete** to watch your progress bar fill up.
-5. **Get Unstuck:** If you don't understand a milestone, open the **AI Assistant** tab. Ask your mentor to explain the concept to you, and it will respond intelligently based on your exact position in the roadmap.
-
----
-
 <div align="center">
-  <h3>Engineered by</h3>
+  <h3>Engineered for the HCLTech AMPlified Challenge by</h3>
   <h2>🚀 KineticModifiers</h2>
 </div>
