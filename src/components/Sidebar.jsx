@@ -13,8 +13,8 @@ export default function Sidebar() {
     { name: 'Dashboard', path: '/dashboard', icon: <Home size={20} /> },
     { name: 'AI Assistant', path: '/chat', icon: <MessageSquare size={20} /> },
     { name: 'My Path', path: '/roadmap', icon: <Map size={20} /> },
+    { name: 'Knowledge Check', path: '/quiz', icon: <Compass size={20} /> },
     { name: 'Profile', path: '/profile', icon: <UserCircle size={20} /> },
-    { name: 'Onboarding', path: '/onboarding', icon: <Compass size={20} /> },
   ];
 
   if (pathname === '/' || pathname === '/onboarding' || pathname === '/login' || pathname === '/signup') {

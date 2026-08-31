@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -87,6 +89,45 @@ export default function Roadmap() {
     }
   };
 
+  const downloadPDF = () => {
+    if (!data) return;
+    const doc = new jsPDF();
+    
+    // Title
+    doc.setFontSize(22);
+    doc.text('LearnSync Candidate Progress Report', 14, 22);
+    
+    // User Details
+    doc.setFontSize(12);
+    doc.text(`Candidate: ${session?.user?.name || 'User'}`, 14, 32);
+    doc.text(`Path: ${data.path.title}`, 14, 38);
+    doc.text(`Description: ${data.path.description}`, 14, 44);
+
+    // Table Data
+    const tableColumn = ["Milestone", "Type", "Status", "Est. Time"];
+    const tableRows = [];
+
+    data.milestones.forEach(m => {
+      const milestoneData = [
+        m.title,
+        m.type,
+        m.status.toUpperCase(),
+        m.estimatedTime || 'N/A'
+      ];
+      tableRows.push(milestoneData);
+    });
+
+    doc.autoTable({
+      startY: 50,
+      head: [tableColumn],
+      body: tableRows,
+      theme: 'grid',
+      headStyles: { fillColor: [139, 92, 246] }, // Brand primary purple
+    });
+
+    doc.save(`LearnSync_Report_${session?.user?.name || 'User'}.pdf`);
+  };
+
   if (loading) return (
     <div className="flex items-center justify-center h-full flex-col gap-4">
       <div className="typing-indicator" style={{ transform: 'scale(1.5)' }}>
@@ -116,8 +157,8 @@ export default function Roadmap() {
           <p>{path.title} - {path.description}</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => window.print()} className="btn-secondary" style={{ fontSize: '0.875rem' }}>
-            <Download size={16} /> Download PDF
+          <button onClick={downloadPDF} className="btn-secondary" style={{ fontSize: '0.875rem' }}>
+            <Download size={16} /> Download Report
           </button>
           <Link href="/onboarding" className="btn-primary" style={{ fontSize: '0.875rem' }}>
             <Sparkles size={16} /> Update Goals
