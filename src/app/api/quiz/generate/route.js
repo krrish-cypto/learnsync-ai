@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
-import connectDB from '@/lib/mongodb';
+import connectDB from '@/lib/mongoose';
 import User from '@/models/User';
 import LearningPath from '@/models/LearningPath';
-import { GoogleGenAI } from '@google/genai';
+import { generateWithFallback } from '@/lib/geminiFallback';
 
 export async function POST(req) {
   try {
@@ -49,15 +49,7 @@ export async function POST(req) {
         }
     `;
 
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-      }
-    });
-
+    const response = await generateWithFallback(prompt, { responseMimeType: 'application/json' });
     const text = response.text;
     const quizData = JSON.parse(text);
 
