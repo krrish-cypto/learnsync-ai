@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
+import ThemeToggle from '@/components/ThemeToggle';
 
 import { Sparkles, Map, Target, MessageSquare } from 'lucide-react';
 
@@ -101,8 +102,12 @@ export default function Signup() {
         alignItems: 'center', 
         justifyContent: 'center', 
         background: 'var(--background)',
-        padding: '2rem'
+        padding: '2rem',
+        position: 'relative'
       }}>
+        <div style={{ position: 'absolute', top: '2rem', right: '2rem' }}>
+          <ThemeToggle />
+        </div>
         <div className="glass-panel" style={{ width: '100%', maxWidth: '450px', padding: '2.5rem' }}>
           <div className="text-center" style={{ marginBottom: '2rem' }}>
             <h2 style={{ fontSize: '1.75rem', fontWeight: 'bold', margin: 0 }}>Create Account</h2>

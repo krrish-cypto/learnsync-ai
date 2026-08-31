@@ -160,7 +160,7 @@ export default function Roadmap() {
                 border: node.status === 'in-progress' ? '1px solid var(--primary)' : '1px solid var(--glass-border)'
               }}>
                 <div className="flex justify-between items-start" style={{ marginBottom: '0.5rem' }}>
-                  <h3 style={{ margin: 0, color: node.status === 'locked' ? 'var(--text-muted)' : 'white' }}>{node.title}</h3>
+                  <h3 style={{ margin: 0, color: node.status === 'locked' ? 'var(--text-muted)' : 'var(--foreground)' }}>{node.title}</h3>
                   <div className="flex gap-2">
                     {node.estimatedTime && (
                       <span className="badge" style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8' }}>

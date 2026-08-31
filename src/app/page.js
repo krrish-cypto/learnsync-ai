@@ -147,10 +147,10 @@ export default function Dashboard() {
                 <h2>Next Recommended Action</h2>
                 <span className="badge badge-primary">Up Next</span>
               </div>
-              <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
+              <div style={{ background: 'var(--surface)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
                 <div className="flex justify-between items-center">
                   <div>
-                    <h3 style={{ color: 'white', marginBottom: '0.5rem' }}>{nextAction.title}</h3>
+                    <h3 style={{ color: 'var(--foreground)', marginBottom: '0.5rem' }}>{nextAction.title}</h3>
                     <div className="flex gap-2 items-center">
                       <p style={{ margin: 0, color: 'var(--text-muted)' }}>{nextAction.type}</p>
                       {nextAction.estimatedTime && <span style={{ color: '#38bdf8', fontSize: '0.875rem' }}>• ⏱️ {nextAction.estimatedTime}</span>}
