@@ -396,3 +396,40 @@ p {
   animation: completePulse 2s infinite;
 }
 
+/* --- Print Styles for PDF Export --- */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  /* Hide UI elements that shouldn't be in the PDF */
+  .sidebar-container, header button, header a, nav, .orb {
+    display: none !important;
+  }
+  
+  .glass-panel {
+    background: transparent !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    color: black !important;
+    break-inside: avoid;
+  }
+  
+  .glass-panel h3, .glass-panel p, .glass-panel div, .glass-panel span {
+    color: black !important;
+  }
+
+  .gradient-text {
+    background: none !important;
+    -webkit-text-fill-color: black !important;
+    color: black !important;
+  }
+  
+  /* Remove scrollbars and allow full height */
+  body, html, main, .flex {
+    overflow: visible !important;
+    height: auto !important;
+  }
+}
+

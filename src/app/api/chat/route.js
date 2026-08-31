@@ -24,7 +24,7 @@ export async function GET(req) {
 export async function POST(req) {
   try {
     const data = await req.json();
-    const { messages, userId, chatId, isRetry } = data;
+    const { messages, userId, chatId, isRetry, pdfContext } = data;
     
     if (!chatId) return NextResponse.json({ error: "Missing chatId" }, { status: 400 });
 
@@ -66,6 +66,10 @@ export async function POST(req) {
       }
     }
 
+    const documentContext = pdfContext 
+      ? `\n--- ATTACHED DOCUMENT CONTEXT ---\nThe user has uploaded a document for you to analyze. Use this context to answer their query:\n${pdfContext}\n-----------------------------------\n`
+      : '';
+
     const prompt = `
       You are an AI learning assistant for the LearnSync platform. The user is asking about their learning path or general software development topics.
       
@@ -74,7 +78,7 @@ export async function POST(req) {
       
       --- THEIR CURRENT ROADMAP ---
       ${pathContext}
-      
+      ${documentContext}
       User Message: ${userMessage}
       
       Respond helpfully, concisely, and use the provided context to give hyper-personalized advice!

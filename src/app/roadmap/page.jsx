@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { CheckCircle2, Circle, Lock, Sparkles, Loader2 } from 'lucide-react';
+import { CheckCircle2, Circle, Lock, Sparkles, Loader2, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
@@ -115,9 +115,14 @@ export default function Roadmap() {
           <h1>Your Personalized <span className="gradient-text">Roadmap</span></h1>
           <p>{path.title} - {path.description}</p>
         </div>
-        <Link href="/onboarding" className="btn-secondary" style={{ fontSize: '0.875rem' }}>
-          <Sparkles size={16} /> Update Goals
-        </Link>
+        <div className="flex gap-2">
+          <button onClick={() => window.print()} className="btn-secondary" style={{ fontSize: '0.875rem' }}>
+            <Download size={16} /> Download PDF
+          </button>
+          <Link href="/onboarding" className="btn-primary" style={{ fontSize: '0.875rem' }}>
+            <Sparkles size={16} /> Update Goals
+          </Link>
+        </div>
       </header>
 
       <div className="glass-panel" style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>

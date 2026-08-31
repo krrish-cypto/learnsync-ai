@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader2, Plus, MessageSquare, Trash2 } from 'lucide-react';
+import { Send, Bot, User, Loader2, Plus, MessageSquare, Trash2, Mic, Paperclip, FileText, X } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useSession } from 'next-auth/react';
 
@@ -11,6 +11,12 @@ export default function ChatAssistant() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // New State for Mic & PDF RAG
+  const [isListening, setIsListening] = useState(false);
+  const [pdfFile, setPdfFile] = useState(null);
+  const fileInputRef = useRef(null);
+
   const messagesEndRef = useRef(null);
   
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -55,7 +61,6 @@ export default function ChatAssistant() {
       setMessages(data.messages);
       
       if (data.messages.length > 0 && data.messages[data.messages.length - 1].role === 'user') {
-        // AI response is missing (previous request likely aborted when switching pages). Retry!
         triggerAiResponse(chatId, data.messages);
       } else {
         setLoading(false);
@@ -76,7 +81,6 @@ export default function ChatAssistant() {
       const data = await res.json();
       
       if (data.reply) {
-        // Refetch to ensure clean state
         const refreshRes = await fetch(`/api/chat?chatId=${chatId}`);
         const refreshData = await refreshRes.json();
         if (refreshData.messages) {
@@ -103,29 +107,91 @@ export default function ChatAssistant() {
     }
   };
 
+  // Web Speech API for Mic Input
+  const handleMicClick = () => {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      alert("Your browser does not support Speech Recognition. Please try Chrome.");
+      return;
+    }
+    
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    
+    recognition.onstart = () => setIsListening(true);
+    
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(prev => prev ? `${prev} ${transcript}` : transcript);
+    };
+    
+    recognition.onerror = (event) => {
+      console.error("Speech Recognition Error:", event.error);
+      setIsListening(false);
+    };
+    
+    recognition.onend = () => setIsListening(false);
+    
+    recognition.start();
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setPdfFile(e.target.files[0]);
+    }
+  };
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim() || loading || !activeChatId) return;
 
     const newMessages = [...messages, { role: 'user', content: input }];
     setMessages(newMessages);
+    const originalInput = input;
     setInput('');
     setLoading(true);
 
-    const userId = session?.user?.id;
+    let pdfContextText = null;
 
+    // Step 1: Upload and Parse PDF if attached (RAG logic)
+    if (pdfFile) {
+      try {
+        const formData = new FormData();
+        formData.append('file', pdfFile);
+        const uploadRes = await fetch('/api/upload-pdf', {
+          method: 'POST',
+          body: formData
+        });
+        const uploadData = await uploadRes.json();
+        if (uploadData.text) {
+          pdfContextText = uploadData.text;
+        }
+      } catch (err) {
+        console.error("Failed to parse PDF", err);
+      }
+      setPdfFile(null); // Clear file after sending
+    }
+
+    // Step 2: Send Chat Message to Gemini with optional PDF Context
+    const userId = session?.user?.id;
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: newMessages, userId, chatId: activeChatId })
+        body: JSON.stringify({ 
+          messages: newMessages, 
+          userId, 
+          chatId: activeChatId,
+          pdfContext: pdfContextText 
+        })
       });
       const data = await res.json();
       
       if (data.reply) {
         setMessages(prev => [...prev, { role: 'ai', content: data.reply }]);
         
-        // Refresh chat list to update title if it was a new chat
         const chatRes = await fetch(`/api/chats?userId=${userId}`);
         const chatData = await chatRes.json();
         if (chatData.chats) setChats(chatData.chats);
@@ -143,7 +209,7 @@ export default function ChatAssistant() {
     <div className="flex-col gap-6" style={{ height: '100%', display: 'flex' }}>
       <header>
         <h1>AI Learning <span className="gradient-text">Assistant</span></h1>
-        <p>Chat with your AI mentor to adjust your goals and get explanations.</p>
+        <p>Chat with your AI mentor to adjust your goals, ask questions, or upload a document for context.</p>
       </header>
 
       <div className="glass-panel flex" style={{ flex: 1, padding: 0, overflow: 'hidden' }}>
@@ -240,8 +306,54 @@ export default function ChatAssistant() {
             <div ref={messagesEndRef} />
           </div>
 
-          <div style={{ padding: '1.5rem', borderTop: '1px solid var(--surface-border)', background: 'var(--secondary)' }}>
-            <form onSubmit={handleSend} className="flex gap-4">
+          <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid var(--surface-border)', background: 'var(--secondary)' }}>
+            
+            {/* PDF Attachment Indicator */}
+            {pdfFile && (
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'rgba(139, 92, 246, 0.1)', color: 'var(--primary)', borderRadius: '8px', marginBottom: '0.75rem', fontSize: '0.875rem' }}>
+                <FileText size={16} />
+                <span style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{pdfFile.name}</span>
+                <button type="button" onClick={() => setPdfFile(null)} style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', display: 'flex' }}>
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+
+            <form onSubmit={handleSend} className="flex gap-2">
+              {/* Hidden File Input */}
+              <input 
+                type="file" 
+                accept="application/pdf"
+                ref={fileInputRef} 
+                onChange={handleFileChange}
+                style={{ display: 'none' }} 
+              />
+              
+              <button 
+                type="button" 
+                onClick={() => fileInputRef.current?.click()}
+                className="btn-secondary" 
+                style={{ padding: '0 1rem', background: 'var(--surface)' }}
+                title="Attach PDF Document"
+              >
+                <Paperclip size={20} />
+              </button>
+
+              <button 
+                type="button" 
+                onClick={handleMicClick}
+                className="btn-secondary" 
+                style={{ 
+                  padding: '0 1rem', 
+                  background: 'var(--surface)',
+                  color: isListening ? '#ef4444' : 'var(--foreground)',
+                  animation: isListening ? 'pulse 1.5s infinite' : 'none'
+                }}
+                title="Voice Input"
+              >
+                <Mic size={20} />
+              </button>
+
               <input 
                 type="text" 
                 className="input-field" 
