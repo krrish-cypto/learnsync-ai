@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String         @id @default(uuid())
+  name         String?
+  interests    String?
+  experience   String?
+  goals        String?
+  level        Int            @default(1)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  learningPath LearningPath?
+}
+
+model LearningPath {
+  id          String      @id @default(uuid())
+  userId      String      @unique
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  milestones  Milestone[]
+}
+
+model Milestone {
+  id             String       @id @default(uuid())
+  learningPathId String
+  learningPath   LearningPath @relation(fields: [learningPathId], references: [id], onDelete: Cascade)
+  title          String
+  type           String       // Course, Project
+  status         String       // locked, in-progress, completed
+  description    String?
+  aiNote         String?
+  order          Int          @default(0)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
