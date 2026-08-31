@@ -4,6 +4,7 @@ import { CheckCircle2, Circle, Lock, Sparkles, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
+import confetti from 'canvas-confetti';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -54,7 +55,32 @@ export default function Roadmap() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ milestoneId, pathId: data.path.id })
       });
-      window.location.reload(); // Refresh the roadmap data
+
+      // Fire celebration confetti!
+      const duration = 2000;
+      const end = Date.now() + duration;
+      const colors = ['#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#3b82f6'];
+      
+      (function frame() {
+        confetti({
+          particleCount: 3,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.7 },
+          colors: colors
+        });
+        confetti({
+          particleCount: 3,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.7 },
+          colors: colors
+        });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      })();
+
+      // Wait a moment so user sees the confetti, then reload
+      setTimeout(() => window.location.reload(), 1500);
     } catch(err) {
       console.error(err);
       setLoading(false);

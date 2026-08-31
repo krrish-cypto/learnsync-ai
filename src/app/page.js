@@ -61,6 +61,21 @@ export default function Dashboard() {
 
   const { user, path, stats, nextAction, recentMilestones, allMilestones } = data;
 
+  // Typewriter effect for the goal text
+  const [typedText, setTypedText] = useState('');
+  const fullText = path.title;
+  useEffect(() => {
+    if (!fullText) return;
+    let i = 0;
+    setTypedText('');
+    const interval = setInterval(() => {
+      setTypedText(fullText.slice(0, i + 1));
+      i++;
+      if (i >= fullText.length) clearInterval(interval);
+    }, 35);
+    return () => clearInterval(interval);
+  }, [fullText]);
+
   return (
     <motion.div 
       className="flex-col gap-6" 
@@ -72,7 +87,7 @@ export default function Dashboard() {
       <motion.header variants={itemVariants} className="flex justify-between items-center" style={{ marginBottom: '2rem' }}>
         <div>
           <h1>{stats.completed === 0 ? "Welcome" : "Welcome back"}, <span className="gradient-text">{session?.user?.name || 'Explorer'}</span></h1>
-          <p>Here's your learning progress toward: <strong>{path.title}</strong></p>
+          <p>Here's your learning progress toward: <strong style={{ borderRight: '2px solid var(--primary)', paddingRight: '2px', animation: 'blink 1s step-end infinite' }}>{typedText}</strong></p>
         </div>
         <div className="flex gap-4">
           <Link href="/onboarding" className="btn-secondary">
