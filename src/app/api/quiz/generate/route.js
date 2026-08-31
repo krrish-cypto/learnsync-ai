@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import connectDB from '@/lib/mongoose';
 import User from '@/models/User';
 import LearningPath from '@/models/LearningPath';
+import Milestone from '@/models/Milestone';
 import { generateWithFallback } from '@/lib/geminiFallback';
 
 export async function POST(req) {
@@ -21,8 +22,10 @@ export async function POST(req) {
       return NextResponse.json({ error: "User or Learning Path not found" }, { status: 404 });
     }
 
+    const milestones = await Milestone.find({ learning_path_id: path._id }).lean();
+
     // Determine context for the quiz
-    const completedMilestones = path.milestones.filter(m => m.status === 'completed');
+    const completedMilestones = milestones.filter(m => m.status === 'completed');
     
     let contextStr = "";
     if (completedMilestones.length > 0) {
