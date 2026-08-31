@@ -2,6 +2,7 @@
 **Team Name:** KineticModifiers
 **Project Type:** AI-Powered Personalized Learning Path Recommender SaaS
 **Deployment URL:** https://learnsync-56nlakpb4-krishnaadubey2005-8466s-projects.vercel.app
+**Demo Video:** https://www.youtube.com/watch?v=DIkIeWAwY18
 
 ---
 
