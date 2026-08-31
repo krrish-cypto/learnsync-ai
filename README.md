@@ -255,5 +255,4 @@ While the current prototype is fully functional for the HCLTech AMPlified Hackat
 <div align="center">
   <h3>Engineered for the HCLTech AMPlified Challenge by</h3>
   <h2>🚀 KineticModifiers</h2>
-  <p>Krishna | 2026</p>
 </div>
