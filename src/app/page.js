@@ -22,6 +22,9 @@ export default function Dashboard() {
   const { data: session, status } = useSession();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Typewriter effect state (must be before early returns)
+  const [typedText, setTypedText] = useState('');
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -39,6 +42,20 @@ export default function Dashboard() {
     };
     fetchDashboard();
   }, [session, status]);
+
+  // Typewriter effect logic
+  useEffect(() => {
+    if (!data?.path?.title) return;
+    const fullText = data.path.title;
+    let i = 0;
+    setTypedText('');
+    const interval = setInterval(() => {
+      setTypedText(fullText.slice(0, i + 1));
+      i++;
+      if (i >= fullText.length) clearInterval(interval);
+    }, 35);
+    return () => clearInterval(interval);
+  }, [data]);
 
   if (loading) return (
     <div className="flex items-center justify-center h-full flex-col gap-4">
@@ -60,21 +77,6 @@ export default function Dashboard() {
   );
 
   const { user, path, stats, nextAction, recentMilestones, allMilestones } = data;
-
-  // Typewriter effect for the goal text
-  const [typedText, setTypedText] = useState('');
-  const fullText = path.title;
-  useEffect(() => {
-    if (!fullText) return;
-    let i = 0;
-    setTypedText('');
-    const interval = setInterval(() => {
-      setTypedText(fullText.slice(0, i + 1));
-      i++;
-      if (i >= fullText.length) clearInterval(interval);
-    }, 35);
-    return () => clearInterval(interval);
-  }, [fullText]);
 
   return (
     <motion.div 
