@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Compass, MessageSquare, Map, Sparkles, LogOut } from 'lucide-react';
+import { Home, Compass, MessageSquare, Map, Sparkles, LogOut, UserCircle } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
 import ThemeToggle from './ThemeToggle';
 
@@ -13,6 +13,7 @@ export default function Sidebar() {
     { name: 'Dashboard', path: '/', icon: <Home size={20} /> },
     { name: 'AI Assistant', path: '/chat', icon: <MessageSquare size={20} /> },
     { name: 'My Path', path: '/roadmap', icon: <Map size={20} /> },
+    { name: 'Profile', path: '/profile', icon: <UserCircle size={20} /> },
     { name: 'Onboarding', path: '/onboarding', icon: <Compass size={20} /> },
   ];
 

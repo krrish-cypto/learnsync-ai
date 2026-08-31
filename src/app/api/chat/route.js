@@ -50,8 +50,18 @@ export async function POST(req) {
       const user = await User.findById(userId).lean();
       const path = await LearningPath.findOne({ user_id: userId }).lean();
       
-      if (user && path) {
-        userContext = `User Profile: Level ${user.level}. Goals: ${user.goals}. Interests: ${user.interests}`;
+      if (user) {
+        const profileParts = [`User Profile: ${user.name}, Level ${user.level}`];
+        if (user.college) profileParts.push(`College: ${user.college}`);
+        if (user.degree) profileParts.push(`Degree: ${user.degree}`);
+        if (user.graduationYear) profileParts.push(`Graduation Year: ${user.graduationYear}`);
+        if (user.skills && user.skills.length > 0) profileParts.push(`Known Skills: ${user.skills.join(', ')}`);
+        if (user.bio) profileParts.push(`Bio: ${user.bio}`);
+        if (user.goals) profileParts.push(`Goals: ${user.goals}`);
+        if (user.interests) profileParts.push(`Interests: ${user.interests}`);
+        userContext = profileParts.join('. ');
+      }
+      if (path) {
         pathContext = `Learning Path: ${path.title}. ${path.description}`;
       }
     }
