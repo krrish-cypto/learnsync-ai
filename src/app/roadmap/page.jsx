@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -91,41 +91,46 @@ export default function Roadmap() {
 
   const downloadPDF = () => {
     if (!data) return;
-    const doc = new jsPDF();
-    
-    // Title
-    doc.setFontSize(22);
-    doc.text('LearnSync Candidate Progress Report', 14, 22);
-    
-    // User Details
-    doc.setFontSize(12);
-    doc.text(`Candidate: ${session?.user?.name || 'User'}`, 14, 32);
-    doc.text(`Path: ${data.path.title}`, 14, 38);
-    doc.text(`Description: ${data.path.description}`, 14, 44);
+    try {
+      const doc = new jsPDF();
+      
+      // Title
+      doc.setFontSize(22);
+      doc.text('LearnSync Candidate Progress Report', 14, 22);
+      
+      // User Details
+      doc.setFontSize(12);
+      doc.text(`Candidate: ${session?.user?.name || 'User'}`, 14, 32);
+      doc.text(`Path: ${data.path.title}`, 14, 38);
+      doc.text(`Description: ${data.path.description}`, 14, 44);
 
-    // Table Data
-    const tableColumn = ["Milestone", "Type", "Status", "Est. Time"];
-    const tableRows = [];
+      // Table Data
+      const tableColumn = ["Milestone", "Type", "Status", "Est. Time"];
+      const tableRows = [];
 
-    data.milestones.forEach(m => {
-      const milestoneData = [
-        m.title,
-        m.type,
-        m.status.toUpperCase(),
-        m.estimatedTime || 'N/A'
-      ];
-      tableRows.push(milestoneData);
-    });
+      data.milestones.forEach(m => {
+        const milestoneData = [
+          m.title,
+          m.type,
+          m.status.toUpperCase(),
+          m.estimatedTime || 'N/A'
+        ];
+        tableRows.push(milestoneData);
+      });
 
-    doc.autoTable({
-      startY: 50,
-      head: [tableColumn],
-      body: tableRows,
-      theme: 'grid',
-      headStyles: { fillColor: [139, 92, 246] }, // Brand primary purple
-    });
+      autoTable(doc, {
+        startY: 50,
+        head: [tableColumn],
+        body: tableRows,
+        theme: 'grid',
+        headStyles: { fillColor: [139, 92, 246] }, // Brand primary purple
+      });
 
-    doc.save(`LearnSync_Report_${session?.user?.name || 'User'}.pdf`);
+      doc.save(`LearnSync_Report_${session?.user?.name || 'User'}.pdf`);
+    } catch (err) {
+      console.error("PDF Generation Error:", err);
+      alert("Failed to generate PDF. Check console for details.");
+    }
   };
 
   if (loading) return (
